@@ -21,8 +21,9 @@ from user import views as user_views
 urlpatterns = [
     url(r'^getAll$', user_views.getAll, name='getAll'),
 
-    url(r'^register$', user_views.register, name='register'),
-    url(r'^activate$', user_views.activate, name='activate'),
+    url(r'^register$', user_views.register, name='register'),               # 注册用户
+    url(r'^activate$', user_views.activate, name='activate'),               # 激活用户 get
+    url(r'^activatePage$', user_views.activatePage, name='activatePage'),   # 激活用户 post
 	
 
     url(r'^admin/', admin.site.urls),

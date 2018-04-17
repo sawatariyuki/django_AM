@@ -4,9 +4,12 @@ from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.core import serializers
 
+from django.contrib.auth.hashers import make_password, check_password
+
+
 from user.models import *
 from .forms import *
-
+from .utils.SendEmail import sendActivateCode
 import random
 
 # 注册用户
@@ -35,6 +38,9 @@ def register(request):
 			codeRange = [chr(i) for i in range(65,91)] + [chr(i) for i in range(48,58)]
 			aCode = ''.join(random.choice(codeRange) for _ in range(6))
 			
+			# md5
+			pw = make_password(pw, None, 'md5')
+
 			userDefault = UserDefault(name=name, pw=pw, email=email, isActivated=False, activateCode=aCode)
 			userDefault.save()
 
@@ -64,6 +70,35 @@ def activate(request):
 	else:
 		return HttpResponse(u'该用户不存在')
 
+def activatePage(request):
+	if request.method == 'POST':
+		activateForm = ActivateForm(request.POST)
+		if activateForm.is_valid():
+
+			name = activateForm.cleaned_data['name']
+			aCode = activateForm.cleaned_data['code']
+
+			if UserDefault.objects.filter(name=name).exists():
+				u = UserDefault.objects.get(name=name)
+				if u.isActivated:
+					return HttpResponse(u'用户已激活')
+				else:
+					if u.activateCode == aCode:
+						UserDefault.objects.filter(name=name).update(isActivated=True)
+						return HttpResponse(u'用户已激活')
+					else:
+						return HttpResponse(u'激活码不正确')
+			else:
+				return HttpResponse(u'该用户不存在')
+	else:
+		activateForm = ActivateForm()
+	return render(request, 'user/activate.html', {'activateForm':activateForm})
+
+
+
+
+
+
 
 def getAll(request):
 	allUsers = UserDefault.objects.all()
@@ -71,17 +106,4 @@ def getAll(request):
 
 
 
-# >>>>>>>>>>>>>>>>>>>>>> utils
-# 发送激活码
-def sendActivateCode(name, email, aCode):
-	from_email = settings.DEFAULT_FROM_EMAIL
-	subject = u'[网站信息]激活码'
-	# net ip here
-	href = '<a href="127.0.0.1:8000/activate?name=' + name + '&code=' + aCode + '">' + aCode + '</a>'
-	content = u'这是你的激活码: ' + href
-	to_addr = email
-
-	msg = EmailMultiAlternatives(subject, content, from_email, [to_addr])
-	msg.content_subtype = 'html'
-	msg.send()
 	

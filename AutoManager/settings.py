@@ -25,7 +25,7 @@ SECRET_KEY = '2t74o%dd)&m%rg4w_by%#x&_z3651+0enw0#&c*ydww)xa3qyo'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -101,6 +101,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+PASSWORD_HASHERS = [
+
+    'django.contrib.auth.hashers.MD5PasswordHasher',  
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',  
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',  
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',  
+    'django.contrib.auth.hashers.BCryptPasswordHasher',  
+    'django.contrib.auth.hashers.SHA1PasswordHasher',  
+    'django.contrib.auth.hashers.CryptPasswordHasher',  
+]  
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
