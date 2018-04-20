@@ -19,12 +19,17 @@ from user import views as user_views
 
 
 urlpatterns = [
+    # GET /getAll
     url(r'^getAll$', user_views.getAll, name='getAll'),
 
+    # POST /register
     url(r'^register$', user_views.register, name='register'),               # 注册用户
-    url(r'^activate$', user_views.activate, name='activate'),               # 激活用户 get
-    url(r'^activatePage$', user_views.activatePage, name='activatePage'),   # 激活用户 post
+    # GET /activate?name=[ ]&code=[ ]
+    url(r'^activate$', user_views.activate, name='activate'),               # 激活用户
+    # POST /activatePage
+    url(r'^activatePage$', user_views.activatePage, name='activatePage'),   # 激活用户
 	
+    
 
     url(r'^admin/', admin.site.urls),
 ]
