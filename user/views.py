@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.core import serializers
+from django.views.decorators.csrf import csrf_exempt
 
 from django.contrib.auth.hashers import make_password, check_password
 
@@ -13,6 +14,7 @@ from .utils.SendEmail import sendActivateCode
 import random
 
 # 注册用户
+@csrf_exempt
 def register(request):
 	if request.method == 'POST':
 		registerForm = RegisterForm(request.POST)
@@ -44,7 +46,7 @@ def register(request):
 			userDefault = UserDefault(name=name, pw=pw, email=email, isActivated=False, activateCode=aCode)
 			userDefault.save()
 
-			sendActivateCode(name, email, aCode)
+			# sendActivateCode(name, email, aCode)
 
 			return HttpResponse(u'用户:' + name + u' 注册成功，激活码已发送到注册邮箱')
 
@@ -70,6 +72,7 @@ def activate(request):
 	else:
 		return HttpResponse(u'该用户不存在')
 
+@csrf_exempt
 def activatePage(request):
 	if request.method == 'POST':
 		activateForm = ActivateForm(request.POST)
