@@ -11,6 +11,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from user.models import *
 from .forms import *
 from .utils.SendEmail import sendActivateCode
+from .utils.ResultJson import getResultJson
 import random
 
 # 注册用户
@@ -105,7 +106,9 @@ def activatePage(request):
 
 def getAll(request):
 	allUsers = UserDefault.objects.all()
-	return HttpResponse( serializers.serialize("json", allUsers) )
+	strJson = getResultJson(0, "", serializers.serialize("json", allUsers))
+
+	return HttpResponse( strJson )
 
 
 
