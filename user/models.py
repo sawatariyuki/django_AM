@@ -1,17 +1,17 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
-import datetime
+from django.utils import timezone as datetime
 
 # Create your models here.
-now = datetime.datetime.now()
+now = datetime.now()
 
 # 用户基本表
 class UserDefault(models.Model):
-	name = models.CharField(max_length=20, unique=True)			# 用户名 唯一
-	pw = models.CharField(max_length=50)						# 密码 MD5加密
-	email = models.EmailField()									# 电子邮箱 用于激活用户
-	isActivated = models.BooleanField()							# 用户是否激活
-	activateCode = models.CharField(max_length=6)				# 激活码
+	name = models.CharField(max_length=20, unique=True)							# 用户名 唯一
+	pw = models.CharField(max_length=50)										# 密码 MD5加密
+	email = models.EmailField()													# 电子邮箱 用于激活用户
+	isActivated = models.BooleanField()											# 用户是否激活
+	activateCode = models.CharField(max_length=6)								# 激活码
 	date_joined = models.DateTimeField(auto_now_add=True, editable=True)		# 注册时间
 	last_joined = models.DateTimeField(auto_now=True, editable=True)			# 最后登录时间
 	isDeleted = models.BooleanField(default=False)
@@ -93,7 +93,6 @@ class OperationLog(models.Model):
 	content = models.TextField(null=True)										# 操作
 	ip = models.GenericIPAddressField(default='127.0.0.1')						# ip
 	ctime = models.DateTimeField(auto_now_add=True, editable=True)				# 记录时间
-
 
 	def __str__(self):
 		return self.userDefault.name + self.content

@@ -94,3 +94,95 @@ class DetailForm(forms.Form):
 										)
 								)
 
+# 新增或修改事务类型
+class EventTypeForm(forms.Form):
+	name = forms.CharField(	widget=forms.TextInput(
+								attrs={'placeholder': '请输入用户名', 'value': '', 'required': 'required',}
+								),  
+							max_length=20, 
+							error_messages={'required': '用户名不能为空',}
+							)
+	typeName = forms.CharField(	widget=forms.TextInput(
+								attrs={'placeholder': '请输入事务类型名称', 'value': '', 'required': 'required',}
+								),  
+							max_length=20, 
+							error_messages={'required': '事务类型名称不能为空',}
+							)
+	description = forms.CharField(	widget=forms.TextInput(
+								attrs={'placeholder': '请输入事务类型描述', 'value': '', 'required': 'required',}
+								),  
+							max_length=100, 
+							error_messages={'required': '描述不能为空',}
+							)
+
+class EventTypeDeleteForm(forms.Form):
+	name = forms.CharField(	widget=forms.TextInput(
+								attrs={'placeholder': '请输入用户名', 'value': '', 'required': 'required',}
+								),  
+							max_length=20, 
+							error_messages={'required': '用户名不能为空',}
+							)
+	typeName = forms.CharField(	widget=forms.TextInput(
+								attrs={'placeholder': '请输入事务类型名称', 'value': '', 'required': 'required',}
+								),  
+							max_length=20, 
+							error_messages={'required': '事务类型名称不能为空',}
+							)
+
+class EventForm(forms.Form):
+	name = forms.CharField(	widget=forms.TextInput(
+								attrs={'placeholder': '请输入用户名', 'value': '', 'required': 'required',}
+								),  
+							max_length=20, 
+							error_messages={'required': '用户名不能为空',}
+							)
+	title = forms.CharField(	widget=forms.TextInput(
+								attrs={'placeholder': '请输入标题', 'value': '', 'required': 'required',}
+								),  
+							max_length=20, 
+							error_messages={'required': '标题不能为空',}
+							)
+	description = forms.CharField(	widget=forms.TextInput(
+								attrs={'placeholder': '请输入描述', 'value': '', 'required': 'required',}
+								),  
+							max_length=200, 
+							error_messages={'required': '描述不能为空',}
+							)
+	typeName = forms.CharField(	widget=forms.TextInput(
+								attrs={'placeholder': '请输入事务类型名称', 'value': '', 'required': 'required',}
+								),  
+							max_length=20, 
+							error_messages={'required': '事务类型名称不能为空',}
+							)
+	userLevel = forms.ChoiceField(	choices=((0, '0'), (1, '1'), (2, '2'), (3, '3')),	# 定义下拉框的选项，元祖第一个值为option的value值，后面为html里面的值
+								initial=0,							# 默认选中第一个option
+								widget=forms.RadioSelect			# 插件表现形式为单选按钮
+							)
+	userStartTime = forms.DateTimeField()
+	userEndTime = forms.DateTimeField()
+	length = forms.IntegerField(	widget=forms.NumberInput(
+									attrs={'placeholder': '请输入事务预计时长 单位分钟', 'value': 0}
+									)
+							)
+
+class EventDeleteForm(forms.Form):
+	name = forms.CharField(	widget=forms.TextInput(
+								attrs={'placeholder': '请输入用户名', 'value': '', 'required': 'required',}
+								),  
+							max_length=20, 
+							error_messages={'required': '用户名不能为空',}
+							)
+	pk = forms.IntegerField()
+
+class EventCancelForm(forms.Form):
+	name = forms.CharField(	widget=forms.TextInput(
+								attrs={'placeholder': '请输入用户名', 'value': '', 'required': 'required',}
+								),  
+							max_length=20, 
+							error_messages={'required': '用户名不能为空',}
+							)
+	pk = forms.IntegerField()
+	cancelOrReactive = forms.ChoiceField(	choices=((0, 'cancel'), (1, 'Reactive')),
+								initial=0,
+								widget=forms.RadioSelect
+							)
