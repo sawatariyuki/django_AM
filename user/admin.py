@@ -20,7 +20,7 @@ class EventInfo(admin.ModelAdmin):
 admin.site.register(Event, EventInfo)
 
 class OperationLogInfo(admin.ModelAdmin):
-	list_display = ('userDefault', 'content', 'ip', 'ctime')
+	list_display = ('userDefault', 'content', 'ip', 'ctime', 'location')
 admin.site.register(OperationLog, OperationLogInfo)
 
 

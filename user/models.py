@@ -95,6 +95,7 @@ class OperationLog(models.Model):
 	content = models.TextField(null=True)										# 操作
 	ip = models.GenericIPAddressField(default='127.0.0.1')						# ip
 	ctime = models.DateTimeField(auto_now_add=True, editable=True)				# 记录时间
+	location = models.CharField(max_length=100, default='未知区域')				# 登录地址
 
 	def __str__(self):
 		return self.userDefault.name + self.content
