@@ -132,6 +132,14 @@ def loginPage(request):
 							u.save()	# save()用于更新用户最后登录时间 last_joined
 							saveLogs(userDefault=u, content='用户登录', request=request)	# 日志记录
 
+							# 更新事务state
+							events = u.event_set.filter(state=1)
+							now = datetime.now()
+							for each in events:
+								if now > each.sysEndTime:
+									each.state = 3
+									each.save()
+
 							return HttpResponse( getJson(code=0, msg=u'登陆成功', data=[]) )
 						else:
 							return HttpResponse( getJson(code=0, msg=u'用户名或密码错误', data=[]) )
@@ -371,14 +379,18 @@ def cancelEvent(request):
 		eventCancelForm = EventCancelForm()
 	return render(request, 'user/cancelEvent.html', {'eventCancelForm':eventCancelForm})
 
-
 # 安排事务 
 def arrange(request):
 	name = request.GET.get('name', '')
 	if UserDefault.objects.filter(name=name).exists():
 		u = UserDefault.objects.get(name=name)
-		arrangeEvent(userDefault=u)
-		return HttpResponse( getJson(code=0, msg=u'事务已安排', data=[]) ) 
+		count = arrangeEvent(userDefault=u)
+		events = u.event_set.all()
+		if len(events) > 0:
+			saveLogs(userDefault=u, content='安排事务', request=request)	# 日志记录
+			return HttpResponse( getJson(code=0, msg=str(count)+u'件事务已安排', data=events) )
+		else:
+			return HttpResponse( getJson(code=0, msg='未查询到事务', data=[]) ) 
 	else:
 		return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
 

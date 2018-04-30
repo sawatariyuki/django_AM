@@ -36,6 +36,8 @@ class UserDetail(models.Model):
 # 注：上述情况下，用 UserDefault 拿 UserDetail 时，使用 UserDefault.userdetail (注意全小写)
 # 				  用 UserDetail 拿 UserDefault 时，使用 UserDetail.userDefault (即UserDetail中字段的名字)
 
+# 注：一对多情况下，用UserDefault 拿 Event 时，使用 UserDefault.event_set.all()
+
 # 用户事务类型表
 class EventType(models.Model):
 	userDefault = models.ForeignKey(UserDefault, on_delete=models.CASCADE)		# 多对一
