@@ -10,7 +10,7 @@ def saveLogs(userDefault, content, request):
 		ip = request.META['REMOTE_ADDR']
 	ret = getlocationByIp(ip)
 	if ret != '-2':
-		location = json.loads(  )
+		location = json.loads( ret )
 		locStr = location['country']+'-'+location['province']+'-'+location['city']
 	else:
 		locStr = '未知区域'

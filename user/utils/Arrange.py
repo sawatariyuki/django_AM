@@ -2,7 +2,7 @@ from user.models import *
 from django.utils import timezone
 from datetime import timedelta
 import random
-import numpy as np
+import math
 
 class EventData(object):
 	def __init__(self, pk, length, endTime, emergency):
@@ -47,7 +47,7 @@ def arrangeEvent(userDefault):
 		print('type:'+str(rate)+'\n')
 
 		# sigmoid
-		rate = 1/(1+np.e**(-rate))
+		rate = 1/(1+math.e**(-rate))
 		print('sigmoid:'+str(rate)+'\n')
 		each.sysLevel = int(rate*99)
 		each.save()
