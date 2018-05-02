@@ -277,14 +277,32 @@ def deleteEventType(request):
 		eventTypeDeleteForm = EventTypeDeleteForm()
 	return render(request, 'user/deleteEventType.html', {'eventTypeDeleteForm':eventTypeDeleteForm})
 
-# 获取用户的事务 根据用户name GET
+# 获取用户的事务(按ctime最近 排序) 根据用户name GET
 def getUserEventByUserName(request):
 	name = request.GET.get('name', '')
+	order = request.GET.get('order', 'ctime')
+	reverse = request.GET.get('reverse', 'true')
+	num = request.GET.get('num', '20')
+
+	reverseChoice = ['false', 'true']
+	orderChoice = ['ctime', 'eventType', 'userStartTime', 'sysStartTime', 'length']
+	if reverse not in reverseChoice:
+		reverse = 'true'
+	if order not in orderChoice:
+		order = 'ctime'
+	try:
+		num = abs(int(float(num)))
+	except ValueError:
+		num = 20
+
 	if UserDefault.objects.filter(name=name).exists():
 		userDefault = UserDefault.objects.get(name=name)
-		events = userDefault.event_set.all()
+		if reverse=='true':
+			events = userDefault.event_set.all().order_by(order).reverse()
+		else:
+			events = userDefault.event_set.all().order_by(order)
 		if len(events) > 0:
-			return HttpResponse( getJson(code=0, msg='', data=events) )
+			return HttpResponse( getJson(code=0, msg='', data=events[:num]) )
 		else:
 			return HttpResponse( getJson(code=0, msg='未查询到事务', data=[]) )
 	else:
@@ -301,8 +319,9 @@ def addEvent(request):
 			description = eventForm.cleaned_data['description']
 			typeName = eventForm.cleaned_data['typeName']
 			userLevel = eventForm.cleaned_data['userLevel']
-			userStartTime = eventForm.cleaned_data['userStartTime']	# 格式yyyy-MM-dd hh:mm
+			userStartTime = eventForm.cleaned_data['userStartTime'].replace(tzinfo=pytz.timezone('UTC'))	# 格式yyyy-MM-dd hh:mm
 			userEndTime = eventForm.cleaned_data['userEndTime'].replace(tzinfo=pytz.timezone('UTC'))		# 格式yyyy-MM-dd hh:mm
+
 			length = eventForm.cleaned_data['length']
 			_length = int((userEndTime-userStartTime).total_seconds()//60)
 

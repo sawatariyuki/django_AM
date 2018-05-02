@@ -50,7 +50,10 @@ urlpatterns = [
 
 
 
-	# GET event/getEvent?name=[ ]
+	# GET event/getEvent?name=[ ]&order=[ ]&reverse=[ ]&num=[ ]
+	# order指定排序方式: ctime, eventType, userStartTime, sysStartTime, length等,默认ctime
+	# reverse指定排序方向: true为从大到小,false为从小到大,默认true
+	# num指定返回数据的数量: 默认20
 	url(r'^event/getEvent$', user_views.getUserEventByUserName, name='getEvent'),	# 获取用户的事务
 
 	# GET event/getType?name=[ ]

@@ -4,6 +4,7 @@ from django.utils import timezone as datetime
 
 # Create your models here.
 now = datetime.now()
+defaultTime = '1990-01-01 12:00:00'
 
 # 用户基本表
 class UserDefault(models.Model):
@@ -25,7 +26,7 @@ class UserDetail(models.Model):
 
 	gender = models.CharField(max_length=2, default='男')						# 性别
 	weight = models.FloatField(default=0)										# 体重(单位kg)
-	birthday = models.DateTimeField(default=now)								# 生日 用于计算年龄
+	birthday = models.DateTimeField(default=defaultTime)								# 生日 用于计算年龄
 	age = models.IntegerField(default=0)										# 年龄
 	birthplace = models.CharField(max_length=100, default='未填写')				# 出生地
 	liveplace = models.CharField(max_length=100, default='未填写')				# 暂住地
@@ -69,11 +70,11 @@ class Event(models.Model):
 		validators = [ MinValueValidator(0), MaxValueValidator(3) ],
 		help_text = '用户描述的事件紧急性<br>取值[0,3]'
 		)
-	userStartTime = models.DateTimeField(default=now)							# 用户决定的开始时间(一般指最晚开始时间)
-	userEndTime = models.DateTimeField(default=now)								# 用户决定的结束时间(最晚结束时间)
+	userStartTime = models.DateTimeField(default=defaultTime)							# 用户决定的开始时间(一般指最晚开始时间)
+	userEndTime = models.DateTimeField(default=defaultTime)								# 用户决定的结束时间(最晚结束时间)
 	length = models.PositiveIntegerField(default=0, help_text='单位分钟')		# 用户决定的事件总需耗时(单位分钟)
-	sysStartTime = models.DateTimeField(default=now)							# 系统计算得出的开始时间
-	sysEndTime = models.DateTimeField(default=now)								# 系统计算得出的结束时间
+	sysStartTime = models.DateTimeField(default=defaultTime)							# 系统计算得出的开始时间
+	sysEndTime = models.DateTimeField(default=defaultTime)								# 系统计算得出的结束时间
 	sysLevel = models.PositiveSmallIntegerField(								# 系统根据该事件信息
 		default = 0,															# 及用户日常习惯计算得到的紧急性 [0,99]
 		validators = [ MinValueValidator(0), MaxValueValidator(99) ],
