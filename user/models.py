@@ -101,9 +101,9 @@ class OperationLog(models.Model):
 	def __str__(self):
 		return self.userDefault.name + self.content
 
-class ipAddress(Models.Model):
+class IpAddress(models.Model):
 	ip = models.GenericIPAddressField()
 	location = models.CharField(max_length=100)
 
 	def __str__(self):
-		return self.ip+"-"+self.location
+		return self.ip
