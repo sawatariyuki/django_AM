@@ -79,10 +79,9 @@ class DetailForm(forms.Form):
 									)
 								)
 
-	birthday = forms.DateTimeField( widget=forms.DateTimeInput(
-										attrs={'type': 'date'}
-										)
-									)
+	birthday = forms.CharField(	widget=forms.TextInput(),
+							max_length=40
+							)
 	birthplace = forms.CharField(	max_length=100, 
 									widget=forms.TextInput(
 										attrs={'placeholder': '请输入出生地', 'value': '未填写', }
@@ -158,8 +157,12 @@ class EventForm(forms.Form):
 								initial=0,							# 默认选中第一个option
 								widget=forms.RadioSelect			# 插件表现形式为单选按钮
 							)
-	userStartTime = forms.DateTimeField()
-	userEndTime = forms.DateTimeField()
+	userStartTime = forms.CharField(	widget=forms.TextInput(),
+							max_length=40
+							)
+	userEndTime = forms.CharField(	widget=forms.TextInput(),
+							max_length=40
+							)
 	length = forms.IntegerField(	widget=forms.NumberInput(
 									attrs={'placeholder': '请输入事务预计时长 单位分钟', 'value': 0}
 									)

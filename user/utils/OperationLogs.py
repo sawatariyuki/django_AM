@@ -8,12 +8,14 @@ def saveLogs(userDefault, content, request):
 		ip = request.META['HTTP_X_FORWARDED_FOR']
 	else:
 		ip = request.META['REMOTE_ADDR']
-	ret = getlocationByIp(ip)
-	if ret != '-2':
+
+	try:
+		ret = getlocationByIp(ip)
 		location = json.loads( ret )
 		locStr = location['country']+'-'+location['province']+'-'+location['city']
-	else:
+	except:
 		locStr = '未知区域'
+
 	log = OperationLog.objects.create(userDefault=userDefault, content=content, ip=ip, location=locStr)
 
 def getlocationByIp(ip):

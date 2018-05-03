@@ -41,7 +41,7 @@ urlpatterns = [
 
 	# POST user/detailPage
 	# name gender weight birthday birthplace liveplace
-	# 注意 birthday 为UTC+0的数据
+	# 注意 birthday 为UTC+0的数据 格式为yyyy-MM-dd
 	url(r'^user/detailPage$', user_views.updateUserDetail, name='detailPage'),		# 修改用户详情
 
 	# GET user/userInfo?name=[ ]

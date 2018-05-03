@@ -5,8 +5,7 @@ from django.conf import settings
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 
-# from django.contrib.auth.hashers import make_password, check_password
-from django.utils import timezone as datetime
+from django.utils import timezone
 
 from user.models import *
 from .forms import *
@@ -16,7 +15,7 @@ from .utils.OperationLogs import saveLogs
 from .utils.Arrange import arrangeEvent
 
 import random
-# import datetime
+import datetime, time
 import pytz
 
 # 用户操作####################################################################################################
@@ -46,9 +45,6 @@ def register(request):
 
 			codeRange = [chr(i) for i in range(65,91)] + [chr(i) for i in range(48,58)]
 			aCode = ''.join(random.choice(codeRange) for _ in range(6))
-			
-			# md5
-			# pw = make_password(pw, None, 'md5')
 
 			userDefault = UserDefault(name=name, pw=pw, email=email, isActivated=False, activateCode=aCode)
 			userDefault.save()
@@ -126,29 +122,29 @@ def loginPage(request):
 			if UserDefault.objects.filter(name=name).exists():
 				u = UserDefault.objects.get(name=name)
 				if not u.isDeleted:
-					if u.isActivated:
-						if u.pw == pw:
+					if u.pw == pw:
+						if u.isActivated:
 
 							u.save()	# save()用于更新用户最后登录时间 last_joined
 							saveLogs(userDefault=u, content='用户登录', request=request)	# 日志记录
 
 							# 更新事务state
 							events = u.event_set.filter(state=1)
-							now = datetime.now()
+							now = timezone.now()
 							for each in events:
 								if now > each.sysEndTime:
 									each.state = 3
 									each.save()
 
-							return HttpResponse( getJson(code=0, msg=u'登陆成功', data=[]) )
+							return HttpResponse( getJson(code=0, msg=u'登陆成功', data=u) )
 						else:
-							return HttpResponse( getJson(code=0, msg=u'用户名或密码错误', data=[]) )
+							return HttpResponse( getJson(code=0, msg=u'请先激活用户', data=u) )
 					else:
-						return HttpResponse( getJson(code=0, msg=u'请先激活用户', data=[]) )
+						return HttpResponse( getJson(code=0, msg=u'用户名或密码错误', data=UserDefault()) )
 				else:
-					return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
+					return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=UserDefault()) )
 			else:
-				return HttpResponse( getJson(code=0, msg=u'用户名或密码错误', data=[]) )
+				return HttpResponse( getJson(code=0, msg=u'用户名或密码错误', data=UserDefault()) )
 	else:
 		loginForm = LoginForm()
 	return render(request, 'user/login.html', {'loginForm':loginForm})	
@@ -167,9 +163,11 @@ def updateUserDetail(request):
 					gender = detailForm.cleaned_data['gender']
 					weight = detailForm.cleaned_data['weight']
 					birthday = detailForm.cleaned_data['birthday']	# birthday:2018-04-24 只要是 yyyy-MM-dd 的字符串就行
+					birthday = datetime.datetime( * time.strptime(birthday, '%Y-%m-%d')[:6] ).replace(tzinfo=pytz.timezone('UTC'))
+
 					# 将offset-naive(不含时区) 转换为 offset-aware(含时区)
 					# age = (datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))-birthday).days//365	# 粗略计算一下年龄
-					age = (datetime.now()-birthday).days//365
+					age = (timezone.now()-birthday).days//365
 					birthplace = detailForm.cleaned_data['birthplace']
 					liveplace = detailForm.cleaned_data['liveplace']
 					if not UserDetail.objects.filter(userDefault=u).exists():
@@ -186,8 +184,9 @@ def updateUserDetail(request):
 						ud.save()
 					u.save()	# save()用于更新用户最后登录时间 last_joined
 					saveLogs(userDefault=u, content='修改用户详情', request=request)	# 日志记录
-					return HttpResponse( getJson(code=0, msg=u'用户详细资料已更新', data=[]) )
+					return HttpResponse( getJson(code=0, msg=u'用户详细资料已更新', data=u.userdetail) )
 				else:
+					userdetail = UserDetail(userDefault=u, birthday='1990-01-01 12:00:00')
 					return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
 			else:
 				return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
@@ -319,15 +318,18 @@ def addEvent(request):
 			description = eventForm.cleaned_data['description']
 			typeName = eventForm.cleaned_data['typeName']
 			userLevel = eventForm.cleaned_data['userLevel']
-			userStartTime = eventForm.cleaned_data['userStartTime'].replace(tzinfo=pytz.timezone('UTC'))	# 格式yyyy-MM-dd hh:mm
-			userEndTime = eventForm.cleaned_data['userEndTime'].replace(tzinfo=pytz.timezone('UTC'))		# 格式yyyy-MM-dd hh:mm
+			userStartTime = eventForm.cleaned_data['userStartTime']	# 格式yyyy-MM-dd hh:mm
+			userEndTime = eventForm.cleaned_data['userEndTime']		# 格式yyyy-MM-dd hh:mm
+
+			userStartTime = datetime.datetime( * time.strptime(userStartTime, '%Y-%m-%d %H:%M')[:6] ).replace(tzinfo=pytz.timezone('UTC'))
+			userEndTime = datetime.datetime( * time.strptime(userEndTime, '%Y-%m-%d %H:%M')[:6] ).replace(tzinfo=pytz.timezone('UTC'))
 
 			length = eventForm.cleaned_data['length']
 			_length = int((userEndTime-userStartTime).total_seconds()//60)
 
 			_length = _length if length>_length else length 		# 最终时长
 
-			if int((userStartTime-datetime.now()).total_seconds())<0:
+			if int((userStartTime-timezone.now()).total_seconds())<0:
 				return HttpResponse( getJson(code=0, msg=u'事务开始时间已不可到达', data=[]) )
 
 
