@@ -9,14 +9,24 @@ def saveLogs(userDefault, content, request):
 	else:
 		ip = request.META['REMOTE_ADDR']
 
-	try:
-		ret = getlocationByIp(ip)
-		location = json.loads( ret )
-		locStr = location['country']+'-'+location['province']+'-'+location['city']
-	except:
-		locStr = '未知区域'
+	if IpAddress.objects.filter(ip=ip).exists():
+		ipAddress = IpAddress.objects.get(ip=ip)
+		locStr = ipAddress.location
+	else:
+		try:
+			ret = getlocationByIp(ip)
+			location = json.loads( ret )
+			locStr = location['country']+'-'+location['province']+'-'+location['city']
+		except:
+			locStr = '未知区域'
+
+		if locStr != '未知区域':
+			ipAddress = IpAddress(ip=ip, location=locStr)
+			ipAddress.save()
 
 	log = OperationLog.objects.create(userDefault=userDefault, content=content, ip=ip, location=locStr)
+
+
 
 def getlocationByIp(ip):
 	url = 'http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=json&ip=%s' % ip

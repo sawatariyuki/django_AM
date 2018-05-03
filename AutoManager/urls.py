@@ -19,6 +19,8 @@ from user import views as user_views
 
 
 urlpatterns = [
+
+
 	# GET getAll
 	url(r'^getAll$', user_views.getAll, name='getAll'),
 	# GET getLogs
@@ -69,7 +71,7 @@ urlpatterns = [
 
 	# POST event/addEvent
 	# name title description typeName userLevel userStartTime userEndTime length
-	# 注意 userStartTime userEndTime 为UTC+0的数据
+	# 注意 userStartTime userEndTime 为UTC+0的数据 格式为yyyy-MM-dd hh:mm
 	url(r'^event/addEvent$', user_views.addEvent, name='event/addEvent'),			# 新增事务
 
 	# POST event/deleteEvent

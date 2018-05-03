@@ -467,3 +467,6 @@ def getLogs(request):
 	return HttpResponse( getJson(code=0, msg='', data=logs) )
 
 	
+
+def test(request):
+	return HttpResponse('test')
