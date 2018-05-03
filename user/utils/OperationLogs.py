@@ -1,4 +1,4 @@
-from ..models import OperationLog
+from ..models import OperationLog, IpAddress
 import urllib.request as r
 import json
 
