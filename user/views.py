@@ -34,15 +34,15 @@ def register(request):
 			email = registerForm.cleaned_data['email']
 
 			if pw != pwConfirm:
-				return HttpResponse( getJson(code=0, msg=u'两次输入的密码不同', data=[]) )
+				return HttpResponse( getJson(code=1, msg=u'两次输入的密码不同', data=[]) )
 
 			is_name_exist = UserDefault.objects.filter(name=name).exists()
 			if is_name_exist:
-				return HttpResponse( getJson(code=0, msg=u'用户名已存在', data=[]) )
+				return HttpResponse( getJson(code=1, msg=u'用户名已存在', data=[]) )
 
 			is_email_exist = UserDefault.objects.filter(email=email).exists()
 			if is_email_exist:
-				return HttpResponse( getJson(code=0, msg=u'该邮箱已被注册', data=[]) )
+				return HttpResponse( getJson(code=1, msg=u'该邮箱已被注册', data=[]) )
 
 			aCode = getCode()
 
@@ -52,7 +52,7 @@ def register(request):
 
 			# sendActivateCode(name, email, aCode)
 
-			return HttpResponse( getJson(code=0, msg=u'用户:' + name + u' 注册成功，激活码已发送到注册邮箱', data=[]) )
+			return HttpResponse( getJson(code=1, msg=u'用户:' + name + u' 注册成功，激活码已发送到注册邮箱', data=[]) )
 
 	else:
 		registerForm = RegisterForm()
@@ -66,18 +66,18 @@ def activate(request):
 		u = UserDefault.objects.get(name=name)
 		if not u.isDeleted:
 			if u.isActivated:
-				return HttpResponse( getJson(code=0, msg=u'用户已激活', data=[]) )
+				return HttpResponse( getJson(code=1, msg=u'用户已激活', data=[]) )
 			else:
 				if u.activateCode == aCode:
 					UserDefault.objects.filter(name=name).update(isActivated=True)
 					saveLogs(userDefault=u, content='用户激活', request=request)	# 日志记录
-					return HttpResponse( getJson(code=0, msg=u'用户已激活', data=[]) )
+					return HttpResponse( getJson(code=1, msg=u'用户已激活', data=[]) )
 				else:
-					return HttpResponse( getJson(code=0, msg=u'激活码不正确', data=[]) )
+					return HttpResponse( getJson(code=1, msg=u'激活码不正确', data=[]) )
 		else:
-			return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
+			return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 	else:
-		return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
+		return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 
 # 激活用户 用户的name和code POST
 @csrf_exempt
@@ -93,18 +93,18 @@ def activatePage(request):
 				u = UserDefault.objects.get(name=name)
 				if not u.isDeleted:
 					if u.isActivated:
-						return HttpResponse( getJson(code=0, msg=u'用户已激活', data=[]) )
+						return HttpResponse( getJson(code=1, msg=u'用户已激活', data=[]) )
 					else:
 						if u.activateCode == aCode:
 							UserDefault.objects.filter(name=name).update(isActivated=True)
 							saveLogs(userDefault=u, content='用户激活', request=request)	# 日志记录
-							return HttpResponse( getJson(code=0, msg=u'用户已激活', data=[]) )
+							return HttpResponse( getJson(code=1, msg=u'用户已激活', data=[]) )
 						else:
-							return HttpResponse( getJson(code=0, msg=u'激活码不正确', data=[]) )
+							return HttpResponse( getJson(code=1, msg=u'激活码不正确', data=[]) )
 				else:
-					return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
+					return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 			else:
-				return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
+				return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 	else:
 		activateForm = ActivateForm()
 	return render(request, 'user/activate.html', {'activateForm':activateForm})
@@ -140,11 +140,11 @@ def loginPage(request):
 						else:
 							return HttpResponse( getJson(code=0, msg=u'请先激活用户', data=u) )
 					else:
-						return HttpResponse( getJson(code=0, msg=u'用户名或密码错误', data=UserDefault()) )
+						return HttpResponse( getJson(code=1, msg=u'用户名或密码错误', data=[]) )
 				else:
-					return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=UserDefault()) )
+					return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 			else:
-				return HttpResponse( getJson(code=0, msg=u'用户名或密码错误', data=UserDefault()) )
+				return HttpResponse( getJson(code=1, msg=u'用户名或密码错误', data=[]) )
 	else:
 		loginForm = LoginForm()
 	return render(request, 'user/login.html', {'loginForm':loginForm})	
@@ -187,9 +187,9 @@ def updateUserDetail(request):
 					return HttpResponse( getJson(code=0, msg=u'用户详细资料已更新', data=u.userdetail) )
 				else:
 					userdetail = UserDetail(userDefault=u, birthday='1990-01-01 12:00:00')
-					return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
+					return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 			else:
-				return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
+				return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 	else:
 		detailForm = DetailForm()
 	return render(request, 'user/detail.html', {'detailForm':detailForm})
@@ -207,9 +207,9 @@ def getUserInfo(request):
 			userInfo = {'default': u, 'detail': userDetail}
 			return HttpResponse( getJson(code=0, msg='', data=userInfo) )
 		else:
-			return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
+			return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 	else:
-		return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
+		return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 
 # 事务操作####################################################################################################
 
@@ -222,9 +222,9 @@ def getUserEventTypeByUserName(request):
 		if len(types) > 0:
 			return HttpResponse( getJson(code=0, msg='', data=types) )
 		else:
-			return HttpResponse( getJson(code=0, msg='未查询到事务类型', data=[]) )
+			return HttpResponse( getJson(code=1, msg='未查询到事务类型', data=[]) )
 	else:
-		return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
+		return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 
 # 新增或修改事务类型 用户name POST
 @csrf_exempt
@@ -243,14 +243,14 @@ def addOrUpdateEventType(request):
 					eventType.description = description
 					eventType.save()
 					saveLogs(userDefault=u, content='更新事务类型', request=request)	# 日志记录
-					return HttpResponse( getJson(code=0, msg='事务类型已更新', data=[]) )
+					return HttpResponse( getJson(code=1, msg='事务类型已更新', data=[]) )
 				else:
 					EventType.objects.create(userDefault=u, name=typeName, description=description)
 					saveLogs(userDefault=u, content='新增事务类型', request=request)	# 日志记录
-					return HttpResponse( getJson(code=0, msg=u'事务类型已新增', data=[]) )
+					return HttpResponse( getJson(code=1, msg=u'事务类型已新增', data=[]) )
 
 			else:
-				return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
+				return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 	else:
 		eventTypeForm = EventTypeForm()
 	return render(request, 'user/addOrUpdateEventType.html', {'eventTypeForm':eventTypeForm})
@@ -269,9 +269,9 @@ def deleteEventType(request):
 				eventType.delete()
 				print(eventType)
 				saveLogs(userDefault=u, content='删除事务类型', request=request)	# 日志记录
-				return HttpResponse( getJson(code=0, msg=u'事务类型已删除', data=[]) )
+				return HttpResponse( getJson(code=1, msg=u'事务类型已删除', data=[]) )
 			else:
-				return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
+				return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 	else:
 		eventTypeDeleteForm = EventTypeDeleteForm()
 	return render(request, 'user/deleteEventType.html', {'eventTypeDeleteForm':eventTypeDeleteForm})
@@ -301,11 +301,11 @@ def getUserEventByUserName(request):
 		else:
 			events = userDefault.event_set.all().order_by(order)
 		if len(events) > 0:
-			return HttpResponse( getJson(code=0, msg='', data=events[:num]) )
+			return HttpResponse( getJson(code=0, msg='', data=events[:num] if num!=0 else [events[0]]) )
 		else:
-			return HttpResponse( getJson(code=0, msg='未查询到事务', data=Event()) )
+			return HttpResponse( getJson(code=1, msg='未查询到事务', data=[]) )
 	else:
-		return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
+		return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 
 # 新增事务 根据用户name POST
 @csrf_exempt
@@ -330,7 +330,7 @@ def addEvent(request):
 			_length = _length if length>_length else length 		# 最终时长
 
 			if int((userStartTime-timezone.now()).total_seconds())<0:
-				return HttpResponse( getJson(code=0, msg=u'事务开始时间已不可到达', data=[]) )
+				return HttpResponse( getJson(code=1, msg=u'事务开始时间已不可到达', data=[]) )
 
 
 			if UserDefault.objects.filter(name=name).exists():
@@ -345,9 +345,9 @@ def addEvent(request):
 				event.save()
 
 				saveLogs(userDefault=u, content='新增事务', request=request)	# 日志记录
-				return HttpResponse( getJson(code=0, msg=u'事务已新增', data=[]) )
+				return HttpResponse( getJson(code=1, msg=u'事务已新增', data=[]) )
 			else:
-				return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
+				return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 	else:
 		eventForm = EventForm()
 	return render(request, 'user/addEvent.html', {'eventForm':eventForm})
@@ -365,9 +365,9 @@ def deleteEvent(request):
 				event = Event.objects.get(userDefault=u, pk=pk)
 				event.delete()
 				saveLogs(userDefault=u, content='删除事务', request=request)	# 日志记录
-				return HttpResponse( getJson(code=0, msg=u'事务已删除', data=[]) )
+				return HttpResponse( getJson(code=1, msg=u'事务已删除', data=[]) )
 			else:
-				return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
+				return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 	else:
 		eventDeleteForm = EventDeleteForm()
 	return render(request, 'user/deleteEvent.html', {'eventDeleteForm':eventDeleteForm})
@@ -388,14 +388,14 @@ def cancelEvent(request):
 					event.state = 2
 					event.save()
 					saveLogs(userDefault=u, content='取消事务', request=request)	# 日志记录
-					return HttpResponse( getJson(code=0, msg=u'事务已取消', data=[]) )
+					return HttpResponse( getJson(code=1, msg=u'事务已取消', data=[]) )
 				elif cancelOrReactive=='1':
 					event.state = 0
 					event.save()
 					saveLogs(userDefault=u, content='重新安排事务', request=request)	# 日志记录
-					return HttpResponse( getJson(code=0, msg=u'事务已在等待安排', data=[]) )
+					return HttpResponse( getJson(code=1, msg=u'事务已在等待安排', data=[]) )
 			else:
-				return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
+				return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 	else:
 		eventCancelForm = EventCancelForm()
 	return render(request, 'user/cancelEvent.html', {'eventCancelForm':eventCancelForm})
@@ -411,9 +411,9 @@ def arrange(request):
 			saveLogs(userDefault=u, content='安排事务', request=request)	# 日志记录
 			return HttpResponse( getJson(code=0, msg=str(count)+u'件事务已安排', data=events) )
 		else:
-			return HttpResponse( getJson(code=0, msg='未查询到事务', data=[]) ) 
+			return HttpResponse( getJson(code=1, msg='未查询到事务', data=[]) ) 
 	else:
-		return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
+		return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 
 # def func(request):
 # 	if request.method == 'POST':
@@ -444,9 +444,9 @@ def getUserLogsByUserName(request):
 		if len(logs) > 0:
 			return HttpResponse( getJson(code=0, msg='', data=logs) )
 		else:
-			return HttpResponse( getJson(code=0, msg='未查询到操作记录', data=[]) )
+			return HttpResponse( getJson(code=1, msg='未查询到操作记录', data=[]) )
 	else:
-		return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
+		return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 
 
 
@@ -464,5 +464,5 @@ def getAll(request):
 
 def getLogs(request):
 	logs = OperationLog.objects.all()
-	return HttpResponse( getJson(code=0, msg='', data=logs) )
+	return HttpResponse( getJson(code=1, msg='', data=logs) )
 
