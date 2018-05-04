@@ -13,6 +13,7 @@ from .utils.SendEmail import sendActivateCode
 from .utils.JsonEncoder import jsonBack, getJson
 from .utils.OperationLogs import saveLogs
 from .utils.Arrange import arrangeEvent
+from .utils.GenerateCode import getCode
 
 import random
 import datetime, time
@@ -43,8 +44,7 @@ def register(request):
 			if is_email_exist:
 				return HttpResponse( getJson(code=0, msg=u'该邮箱已被注册', data=[]) )
 
-			codeRange = [chr(i) for i in range(65,91)] + [chr(i) for i in range(48,58)]
-			aCode = ''.join(random.choice(codeRange) for _ in range(6))
+			aCode = getCode()
 
 			userDefault = UserDefault(name=name, pw=pw, email=email, isActivated=False, activateCode=aCode)
 			userDefault.save()
@@ -303,7 +303,7 @@ def getUserEventByUserName(request):
 		if len(events) > 0:
 			return HttpResponse( getJson(code=0, msg='', data=events[:num]) )
 		else:
-			return HttpResponse( getJson(code=0, msg='未查询到事务', data=[]) )
+			return HttpResponse( getJson(code=0, msg='未查询到事务', data=Event()) )
 	else:
 		return HttpResponse( getJson(code=0, msg=u'该用户不存在', data=[]) )
 
@@ -466,7 +466,3 @@ def getLogs(request):
 	logs = OperationLog.objects.all()
 	return HttpResponse( getJson(code=0, msg='', data=logs) )
 
-	
-
-def test(request):
-	return HttpResponse('test')

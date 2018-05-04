@@ -1,10 +1,13 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.utils import timezone as datetime
+from django.utils import timezone
+import datetime, time
+import pytz
 
 # Create your models here.
-now = datetime.now()
+now = timezone.now()
 defaultTime = '1990-01-01 12:00:00'
+defaultTime = datetime.datetime( * time.strptime(defaultTime, '%Y-%m-%d %H:%M:%S')[:6] ).replace(tzinfo=pytz.timezone('UTC'))
 
 # 用户基本表
 class UserDefault(models.Model):
