@@ -282,6 +282,7 @@ def getUserEventByUserName(request):
 	order = request.GET.get('order', 'ctime')
 	reverse = request.GET.get('reverse', 'true')
 	num = request.GET.get('num', '20')
+	state = request.GET.get('state', '4')
 
 	reverseChoice = ['false', 'true']
 	orderChoice = ['ctime', 'eventType', 'userStartTime', 'sysStartTime', 'length']
@@ -293,13 +294,31 @@ def getUserEventByUserName(request):
 		num = abs(int(float(num)))
 	except ValueError:
 		num = 20
+	try:
+		state = abs(int(float(state)))
+	except ValueError:
+		state = 4
+
+	print('STATE: %s' % state)
 
 	if UserDefault.objects.filter(name=name).exists():
 		userDefault = UserDefault.objects.get(name=name)
-		if reverse=='true':
-			events = userDefault.event_set.all().order_by(order).reverse()
+		if 0<=state<=3:
+			if reverse=='true':
+				events = userDefault.event_set.filter(state=state).order_by(order).reverse()
+			else:
+				events = userDefault.event_set.filter(state=state).order_by(order)
+		elif state==5:
+			if reverse=='true':
+				events = userDefault.event_set.all().order_by(order).reverse()
+			else:
+				events = userDefault.event_set.all().order_by(order)
 		else:
-			events = userDefault.event_set.all().order_by(order)
+			if reverse=='true':
+				events = userDefault.event_set.all().exclude(state=3).order_by(order).reverse()
+			else:
+				events = userDefault.event_set.all().exclude(state=3).order_by(order)
+
 		if len(events) > 0:
 			return HttpResponse( getJson(code=0, msg='', data=events[:num] if num!=0 else [events[0]]) )
 		else:
