@@ -53,14 +53,15 @@ urlpatterns = [
 
 
 	# GET event/getEvent?name=[ ]&order=[ ]&reverse=[ ]&num=[ ]&state=[ ]
-	# order指定排序方式: ctime, eventType, userStartTime, sysStartTime, length等,默认ctime
-	# reverse指定排序方向: true为从大到小,false为从小到大,默认true
+	# order指定排序方式: ctime, eventType, userStartTime, sysStartTime, length等, 默认ctime
+	# reverse指定排序方向: true为从大到小,false为从小到大, 默认true
 	# num指定返回数据的数量: 默认20
 	# state指定返回何种event: 默认4,	0:等待被安排(state==0) 1:已安排(state==1) 2:已取消(state==2) 3:已完成(state==3)
 	# 									4:未完成(state!=3) 5:所有
 	url(r'^event/getEvent$', user_views.getUserEventByUserName, name='getEvent'),	# 获取用户的事务
 
 	# GET event/getType?name=[ ]
+	# 按常创建时间最新排序
 	url(r'^event/getType$', user_views.getUserEventTypeByUserName, name='getType'),	# 获取用户的事务类型
 	
 	# POST event/addOrUpdateEventType
