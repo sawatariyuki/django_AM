@@ -24,6 +24,6 @@ class OperationLogInfo(admin.ModelAdmin):
 admin.site.register(OperationLog, OperationLogInfo)
 
 class IpAddressInfo(admin.ModelAdmin):
-	list_display = ('ip', 'location')
+	list_display = ('ip', 'location', 'ctime', 'last_used')
 admin.site.register(IpAddress, IpAddressInfo)
 

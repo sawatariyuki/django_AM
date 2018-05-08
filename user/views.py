@@ -184,7 +184,7 @@ def updateUserDetail(request):
 						ud.save()
 					u.save()	# save()用于更新用户最后登录时间 last_joined
 					saveLogs(userDefault=u, content='修改用户详情', request=request)	# 日志记录
-					return HttpResponse( getJson(code=0, msg=u'用户详细资料已更新', data=u.userdetail) )
+					return HttpResponse( getJson(code=0, msg=u'用户详细资料已更新', data=[]) )
 				else:
 					userdetail = UserDetail(userDefault=u, birthday='1990-01-01 12:00:00')
 					return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
@@ -391,6 +391,7 @@ def deleteEvent(request):
 		eventDeleteForm = EventDeleteForm()
 	return render(request, 'user/deleteEvent.html', {'eventDeleteForm':eventDeleteForm})
 
+
 # 取消事务 根据用户name 事务pk POST
 @csrf_exempt
 def cancelEvent(request):
@@ -428,7 +429,7 @@ def arrange(request):
 		events = u.event_set.all()
 		if len(events) > 0:
 			saveLogs(userDefault=u, content='安排事务', request=request)	# 日志记录
-			return HttpResponse( getJson(code=0, msg=str(count)+u'件事务已安排', data=events) )
+			return HttpResponse( getJson(code=0, msg=str(count)+u'件事务已安排', data=[]) )
 		else:
 			return HttpResponse( getJson(code=1, msg='未查询到事务', data=[]) ) 
 	else:

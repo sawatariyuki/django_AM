@@ -109,6 +109,8 @@ class OperationLog(models.Model):
 class IpAddress(models.Model):
 	ip = models.GenericIPAddressField()
 	location = models.CharField(max_length=100)
+	ctime = models.DateTimeField(auto_now_add=True, editable=True)				# 创建时间
+	last_used = models.DateTimeField(auto_now=True, editable=True)				# 最后使用时间
 
 	def __str__(self):
 		return self.ip
