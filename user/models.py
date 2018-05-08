@@ -55,6 +55,7 @@ class EventType(models.Model):
 		)
 	ctime = models.DateTimeField(auto_now_add=True, editable=True)				# 事务类型创建时间
 	last_used = models.DateTimeField(auto_now=True, editable=True)				# 事务类型最后使用时间
+	isDeleted = models.BooleanField(default=False)
 
 	def __str__(self):
 		return self.name
@@ -88,6 +89,7 @@ class Event(models.Model):
 		validators = [ MinValueValidator(0), MaxValueValidator(3) ],
 		help_text = '该事务的状态<br>0:等待被安排 1:已安排 2:已取消 3:已完成'
 		)
+	isDeleted = models.BooleanField(default=False)
 
 	def __str__(self):
 		return self.title

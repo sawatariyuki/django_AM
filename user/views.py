@@ -213,12 +213,12 @@ def getUserInfo(request):
 
 # 事务操作####################################################################################################
 
-# 获取用户的事务类型 根据用户name GET
+# 获取用户的事务类型 根据用户name GET 按常创建时间最新排序
 def getUserEventTypeByUserName(request):
 	name = request.GET.get('name', '')
 	if UserDefault.objects.filter(name=name).exists():
 		userDefault = UserDefault.objects.get(name=name)
-		types = userDefault.eventtype_set.all()
+		types = userDefault.eventtype_set.filter(isDeleted=False).order_by(ctime).reverse()
 		if len(types) > 0:
 			return HttpResponse( getJson(code=0, msg='', data=types) )
 		else:
@@ -266,8 +266,7 @@ def deleteEventType(request):
 			if UserDefault.objects.filter(name=name).exists():
 				u = UserDefault.objects.get(name=name)
 				eventType = EventType.objects.filter(userDefault=u).filter(name=typeName)
-				eventType.delete()
-				print(eventType)
+				eventType.update(isDeleted=True)
 				saveLogs(userDefault=u, content='删除事务类型', request=request)	# 日志记录
 				return HttpResponse( getJson(code=1, msg=u'事务类型已删除', data=[]) )
 			else:
@@ -305,19 +304,19 @@ def getUserEventByUserName(request):
 		userDefault = UserDefault.objects.get(name=name)
 		if 0<=state<=3:
 			if reverse=='true':
-				events = userDefault.event_set.filter(state=state).order_by(order).reverse()
+				events = userDefault.event_set.filter(state=state).filter(isDeleted=False).order_by(order).reverse()
 			else:
-				events = userDefault.event_set.filter(state=state).order_by(order)
+				events = userDefault.event_set.filter(state=state).filter(isDeleted=False).order_by(order)
 		elif state==5:
 			if reverse=='true':
-				events = userDefault.event_set.all().order_by(order).reverse()
+				events = userDefault.event_set.filter(isDeleted=False).order_by(order).reverse()
 			else:
-				events = userDefault.event_set.all().order_by(order)
+				events = userDefault.event_set.filter(isDeleted=False).order_by(order)
 		else:
 			if reverse=='true':
-				events = userDefault.event_set.all().exclude(state=3).order_by(order).reverse()
+				events = userDefault.event_set.filter(isDeleted=False).exclude(state=3).order_by(order).reverse()
 			else:
-				events = userDefault.event_set.all().exclude(state=3).order_by(order)
+				events = userDefault.event_set.filter(isDeleted=False).exclude(state=3).order_by(order)
 
 		if len(events) > 0:
 			return HttpResponse( getJson(code=0, msg='', data=events[:num] if num!=0 else [events[0]]) )
@@ -382,7 +381,8 @@ def deleteEvent(request):
 			if UserDefault.objects.filter(name=name).exists():
 				u = UserDefault.objects.get(name=name)
 				event = Event.objects.get(userDefault=u, pk=pk)
-				event.delete()
+				event.isDeleted = True
+				event.save()
 				saveLogs(userDefault=u, content='删除事务', request=request)	# 日志记录
 				return HttpResponse( getJson(code=1, msg=u'事务已删除', data=[]) )
 			else:

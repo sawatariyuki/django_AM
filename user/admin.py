@@ -12,11 +12,11 @@ class UserDetailInfo(admin.ModelAdmin):
 admin.site.register(UserDetail, UserDetailInfo)
 
 class EventTypeInfo(admin.ModelAdmin):
-	list_display = ('userDefault', 'name', 'description', 'useTimes', 'emergencyLevel', 'ctime', 'last_used')
+	list_display = ('userDefault', 'name', 'description', 'useTimes', 'emergencyLevel', 'ctime', 'last_used', 'isDeleted')
 admin.site.register(EventType, EventTypeInfo)
 
 class EventInfo(admin.ModelAdmin):
-	list_display = ('userDefault', 'title', 'description', 'eventType', 'ctime', 'userLevel', 'userStartTime', 'userEndTime', 'length', 'sysStartTime', 'sysEndTime', 'sysLevel', 'state')
+	list_display = ('userDefault', 'title', 'description', 'eventType', 'ctime', 'userLevel', 'userStartTime', 'userEndTime', 'length', 'sysStartTime', 'sysEndTime', 'sysLevel', 'state', 'isDeleted')
 admin.site.register(Event, EventInfo)
 
 class OperationLogInfo(admin.ModelAdmin):
