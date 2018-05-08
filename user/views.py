@@ -218,7 +218,7 @@ def getUserEventTypeByUserName(request):
 	name = request.GET.get('name', '')
 	if UserDefault.objects.filter(name=name).exists():
 		userDefault = UserDefault.objects.get(name=name)
-		types = userDefault.eventtype_set.filter(isDeleted=False).order_by(ctime).reverse()
+		types = userDefault.eventtype_set.filter(isDeleted=False).order_by('ctime').reverse()
 		if len(types) > 0:
 			return HttpResponse( getJson(code=0, msg='', data=types) )
 		else:
@@ -459,7 +459,7 @@ def getUserLogsByUserName(request):
 	name = request.GET.get('name', '')
 	if UserDefault.objects.filter(name=name).exists():
 		userDefault = UserDefault.objects.get(name=name)
-		logs = userDefault.operationlog_set.all().order_by("ctime").reverse()[:20]	# 最近20条
+		logs = userDefault.operationlog_set.all().order_by('ctime').reverse()[:20]	# 最近20条
 		if len(logs) > 0:
 			return HttpResponse( getJson(code=0, msg='', data=logs) )
 		else:
