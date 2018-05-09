@@ -13,14 +13,14 @@ class RegisterForm(forms.Form):
 								attrs={'placeholder': '请输入密码', 'value': '', 'required': 'required',}
 								),  
 							min_length=8, 
-							max_length=20, 
+							max_length=50, 
 							error_messages={'required': '密码不能为空',}
 							)
 	pwConfirm = forms.CharField(	widget=forms.PasswordInput(
 										attrs={'placeholder': '请确认密码', 'value': '', 'required': 'required',}
 										),  
 									min_length=8, 
-									max_length=20, 
+									max_length=50, 
 									error_messages={'required': '密码不能为空',}
 									)
 	email = forms.EmailField(	widget=forms.TextInput(
@@ -57,7 +57,7 @@ class LoginForm(forms.Form):
 								attrs={'placeholder': '请输入密码', 'value': '', 'required': 'required',}
 								), 
 							min_length=8, 
-							max_length=20, 
+							max_length=50, 
 							error_messages={'required': '密码不能为空',}
 							)
 
