@@ -238,6 +238,7 @@ def addOrUpdateEventType(request):
 				if EventType.objects.filter(userDefault=u).filter(name=typeName).exists():
 					eventType = EventType.objects.get(userDefault=u, name=typeName)
 					eventType.description = description
+					eventType.isDeleted = False
 					eventType.save()
 					saveLogs(userDefault=u, content='更新事务类型', request=request)	# 日志记录
 					return HttpResponse( getJson(code=1, msg='事务类型已更新', data=[]) )
@@ -264,6 +265,8 @@ def deleteEventType(request):
 				u = UserDefault.objects.get(name=name)
 				eventType = EventType.objects.filter(userDefault=u).filter(name=typeName)
 				eventType.update(isDeleted=True)
+				Event.objects.filter(eventType=eventType).update(isDeleted=True)
+
 				saveLogs(userDefault=u, content='删除事务类型', request=request)	# 日志记录
 				return HttpResponse( getJson(code=1, msg=u'事务类型已删除', data=[]) )
 			else:

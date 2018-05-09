@@ -69,9 +69,10 @@ class DetailForm(forms.Form):
 							max_length=20, 
 							error_messages={'required': '用户名不能为空',}
 							)
-	gender = forms.ChoiceField(	choices=(('男', '男'), ('女', '女'),),	# 定义下拉框的选项，元祖第一个值为option的value值，后面为html里面的值
-								initial='男',							# 默认选中第一个option
-								widget=forms.RadioSelect			# 插件表现形式为单选按钮
+	gender = forms.CharField(	max_length=2,				
+								widget=forms.TextInput(
+									attrs={'placeholder': '男 or 女', 'value': '男', }
+									)
 							)
 
 	weight = forms.FloatField( widget=forms.NumberInput(
