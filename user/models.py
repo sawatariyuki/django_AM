@@ -29,7 +29,7 @@ class UserDetail(models.Model):
 
 	gender = models.CharField(max_length=2, default='男')						# 性别
 	weight = models.FloatField(default=0)										# 体重(单位kg)
-	birthday = models.DateTimeField(default=defaultTime)								# 生日 用于计算年龄
+	birthday = models.DateTimeField(default=defaultTime)						# 生日 用于计算年龄
 	age = models.IntegerField(default=0)										# 年龄
 	birthplace = models.CharField(max_length=100, default='未填写')				# 出生地
 	liveplace = models.CharField(max_length=100, default='未填写')				# 暂住地

@@ -124,8 +124,6 @@ def loginPage(request):
 				if not u.isDeleted:
 					if u.pw == pw:
 						if u.isActivated:
-
-							u.save()	# save()用于更新用户最后登录时间 last_joined
 							saveLogs(userDefault=u, content='用户登录', request=request)	# 日志记录
 
 							# 更新事务state
@@ -182,7 +180,6 @@ def updateUserDetail(request):
 						ud.birthplace = birthplace
 						ud.liveplace = liveplace
 						ud.save()
-					u.save()	# save()用于更新用户最后登录时间 last_joined
 					saveLogs(userDefault=u, content='修改用户详情', request=request)	# 日志记录
 					return HttpResponse( getJson(code=0, msg=u'用户详细资料已更新', data=[]) )
 				else:
@@ -204,7 +201,7 @@ def getUserInfo(request):
 				userDetail = u.userdetail
 			else:
 				userDetail = UserDetail()
-			userInfo = {'default': u, 'detail': userDetail}
+			userInfo = {'u_default': u, 'u_detail': userDetail}
 			return HttpResponse( getJson(code=0, msg='', data=userInfo) )
 		else:
 			return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )

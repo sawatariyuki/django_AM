@@ -1,6 +1,7 @@
 from ..models import OperationLog, IpAddress
 import urllib.request as r
 import json
+from django.utils import timezone
 
 # 保存用户操作记录
 def saveLogs(userDefault, content, request):
@@ -25,7 +26,12 @@ def saveLogs(userDefault, content, request):
 			ipAddress.save()
 
 	log = OperationLog.objects.create(userDefault=userDefault, content=content, ip=ip, location=locStr)
-
+	# age = (datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))-birthday).days//365	# 粗略计算一下年龄
+	birthday = userDefault.userdetail.birthday
+	age = (timezone.now()-birthday).days//365
+	userDefault.userdetail.age = age
+	userDefault.userdetail.save()	# 更新用户年龄
+	userDefault.save()				# 用户更新最后登录时间
 
 
 def getlocationByIp(ip):
