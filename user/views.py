@@ -456,12 +456,21 @@ def arrange(request):
 # 日志操作####################################################################################################
 
 # 获取用户操作记录 根据用户name GET
+# 7天内 或 20 条记录
 def getUserLogsByUserName(request):
 	name = request.GET.get('name', '')
 	if UserDefault.objects.filter(name=name).exists():
 		userDefault = UserDefault.objects.get(name=name)
-		logs = userDefault.operationlog_set.all().order_by('ctime').reverse()[:20]	# 最近20条
-		if len(logs) > 0:
+		# logs = userDefault.operationlog_set.all().order_by('ctime').reverse()[:20]	# 最近20条
+		now = timezone.now()	# 获取服务器当前时间
+		start_time = now + timezone.timedelta(days=-7)	# 7天前
+		# 7天内的记录
+		logs = userDefault.operationlog_set.filter(ctime__gte=start_time).order_by('ctime').reverse()
+		
+		if 0 < len(logs) < 20:
+			logs = userDefault.operationlog_set.all().order_by('ctime').reverse()[:20]
+			return HttpResponse( getJson(code=0, msg='', data=logs) )
+		elif 20 <= len(logs):
 			return HttpResponse( getJson(code=0, msg='', data=logs) )
 		else:
 			return HttpResponse( getJson(code=1, msg='未查询到操作记录', data=[]) )
