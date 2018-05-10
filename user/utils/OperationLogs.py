@@ -13,6 +13,7 @@ def saveLogs(userDefault, content, request):
 	if IpAddress.objects.filter(ip=ip).exists():
 		ipAddress = IpAddress.objects.get(ip=ip)
 		locStr = ipAddress.location
+		ipAddress.save()	# 更新最后使用时间
 	else:
 		try:
 			ret = getlocationByIp(ip)
