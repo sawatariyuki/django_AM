@@ -20,6 +20,16 @@ class EventData(object):
 			self.SysStartTime, self.SysEndTime)
 
 
+def setEventFinish(userDefault):
+	# 将过期的事务的设定为已完成
+	event_to_finish = Event.objects.filter(userDefault=userDefault).filter(state__in=[0,1,2])	# 获取该用户下 等待安排 已安排 和 已取消 的事务
+	now = timezone.now()
+	for each in event_to_finish:
+		if each.sysStartTime < now:
+			each.state = 3
+			each.save()
+
+
 def arrangeEvent(userDefault):
 	# 更新用户事务类型中的紧要程度
 	eventType = userDefault.eventtype_set.all()
@@ -29,6 +39,7 @@ def arrangeEvent(userDefault):
 		each.emergencyLevel = each.useTimes/totalCount*99
 		each.save()
 
+	setEventFinish(userDefault)
 
 	# 计算待安排事务的紧要性
 	event_waiting = Event.objects.filter(userDefault=userDefault).filter(state=0)	# 获取该用户下待安排的事务
