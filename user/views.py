@@ -13,7 +13,7 @@ from .utils.SendEmail import sendActivateCode
 from .utils.JsonEncoder import jsonBack, getJson
 from .utils.OperationLogs import saveLogs
 from .utils.Arrange import arrangeEvent
-from .utils.GenerateCode import getCode
+from .utils.GenerateCode import getCode, GenerateDynamicCode
 
 import random
 import datetime, time
@@ -51,8 +51,8 @@ def register(request):
 			saveLogs(userDefault=userDefault, content='用户注册', request=request)	# 日志记录
 
 			# sendActivateCode(name, email, aCode)
-
-			return HttpResponse( getJson(code=1, msg=u'用户:' + name + u' 注册成功，激活码已发送到注册邮箱', data=[]) )
+			userDefault.pw = ""
+			return HttpResponse( getJson(code=0, msg=u'用户:' + name + u' 注册成功，激活码已发送到注册邮箱', data=userDefault) )
 
 	else:
 		registerForm = RegisterForm()
@@ -133,9 +133,10 @@ def loginPage(request):
 								if now > each.sysEndTime:
 									each.state = 3
 									each.save()
-
+							u.pw = ""
 							return HttpResponse( getJson(code=0, msg=u'登陆成功', data=u) )
 						else:
+							u.pw = ""
 							return HttpResponse( getJson(code=0, msg=u'请先激活用户', data=u) )
 					else:
 						return HttpResponse( getJson(code=1, msg=u'用户名或密码错误', data=[]) )
@@ -158,32 +159,36 @@ def updateUserDetail(request):
 			if UserDefault.objects.filter(name=name).exists():
 				u = UserDefault.objects.get(name=name)
 				if not u.isDeleted:
-					gender = detailForm.cleaned_data['gender']
-					weight = detailForm.cleaned_data['weight']
-					birthday = detailForm.cleaned_data['birthday']	# birthday:2018-04-24 只要是 yyyy-MM-dd 的字符串就行
-					birthday = datetime.datetime( * time.strptime(birthday, '%Y-%m-%d')[:6] ).replace(tzinfo=pytz.timezone('UTC'))
+					dynamicCode = detailForm.cleaned_data['dynamicCode']
+					if dynamicCode == GenerateDynamicCode(name):
 
-					# 将offset-naive(不含时区) 转换为 offset-aware(含时区)
-					# age = (datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))-birthday).days//365	# 粗略计算一下年龄
-					age = (timezone.now()-birthday).days//365
-					birthplace = detailForm.cleaned_data['birthplace']
-					liveplace = detailForm.cleaned_data['liveplace']
-					if not UserDetail.objects.filter(userDefault=u).exists():
-						userDetail = UserDetail(userDefault=u, gender=gender, weight=weight, birthday=birthday, age=age, birthplace=birthplace, liveplace=liveplace)
-						userDetail.save()
+						gender = detailForm.cleaned_data['gender']
+						weight = detailForm.cleaned_data['weight']
+						birthday = detailForm.cleaned_data['birthday']	# birthday:2018-04-24 只要是 yyyy-MM-dd 的字符串就行
+						birthday = datetime.datetime( * time.strptime(birthday, '%Y-%m-%d')[:6] ).replace(tzinfo=pytz.timezone('UTC'))
+
+						# 将offset-naive(不含时区) 转换为 offset-aware(含时区)
+						# age = (datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))-birthday).days//365	# 粗略计算一下年龄
+						age = (timezone.now()-birthday).days//365
+						birthplace = detailForm.cleaned_data['birthplace']
+						liveplace = detailForm.cleaned_data['liveplace']
+						if not UserDetail.objects.filter(userDefault=u).exists():
+							userDetail = UserDetail(userDefault=u, gender=gender, weight=weight, birthday=birthday, age=age, birthplace=birthplace, liveplace=liveplace)
+							userDetail.save()
+						else:
+							ud = UserDetail.objects.get(userDefault=u)
+							ud.gender = gender
+							ud.weight = weight
+							ud.birthday = birthday
+							ud.age = age
+							ud.birthplace = birthplace
+							ud.liveplace = liveplace
+							ud.save()
+						saveLogs(userDefault=u, content='修改用户详情', request=request)	# 日志记录
+						return HttpResponse( getJson(code=1, msg=u'用户详细资料已更新', data=[]) )
 					else:
-						ud = UserDetail.objects.get(userDefault=u)
-						ud.gender = gender
-						ud.weight = weight
-						ud.birthday = birthday
-						ud.age = age
-						ud.birthplace = birthplace
-						ud.liveplace = liveplace
-						ud.save()
-					saveLogs(userDefault=u, content='修改用户详情', request=request)	# 日志记录
-					return HttpResponse( getJson(code=0, msg=u'用户详细资料已更新', data=[]) )
+						return HttpResponse( getJson(code=1, msg=u'请确认系统时间', data=[]) )
 				else:
-					userdetail = UserDetail(userDefault=u, birthday='1990-01-01 12:00:00')
 					return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
 			else:
 				return HttpResponse( getJson(code=1, msg=u'该用户不存在', data=[]) )
@@ -201,6 +206,7 @@ def getUserInfo(request):
 				userDetail = u.userdetail
 			else:
 				userDetail = UserDetail()
+			u.pw = ""
 			userInfo = {'u_default': u, 'u_detail': userDetail}
 			return HttpResponse( getJson(code=0, msg='', data=userInfo) )
 		else:
@@ -429,7 +435,7 @@ def arrange(request):
 		events = u.event_set.all()
 		if len(events) > 0:
 			saveLogs(userDefault=u, content='安排事务', request=request)	# 日志记录
-			return HttpResponse( getJson(code=0, msg=str(count)+u'件事务已安排', data=[]) )
+			return HttpResponse( getJson(code=1, msg=str(count)+u'件事务已安排', data=[]) )
 		else:
 			return HttpResponse( getJson(code=1, msg='未查询到事务', data=[]) ) 
 	else:
@@ -493,5 +499,8 @@ def getAll(request):
 
 def getLogs(request):
 	logs = OperationLog.objects.all()
-	return HttpResponse( getJson(code=1, msg='', data=logs) )
+	return HttpResponse( getJson(code=0, msg='', data=logs) )
 
+def testMD5(request):
+	username = request.GET.get('name','')
+	return HttpResponse( GenerateDynamicCode(username) )

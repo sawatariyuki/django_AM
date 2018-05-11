@@ -93,6 +93,11 @@ class DetailForm(forms.Form):
 										attrs={'placeholder': '请输入暂住地', 'value': '未填写', }
 										)
 								)
+	dynamicCode = forms.CharField(	max_length=50, 
+									widget=forms.TextInput(
+										attrs={'placeholder': '请输入动态码', 'value': '未填写', }
+										)
+								)
 
 # 新增或修改事务类型
 class EventTypeForm(forms.Form):

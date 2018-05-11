@@ -25,6 +25,9 @@ urlpatterns = [
 	url(r'^getAll$', user_views.getAll, name='getAll'),
 	# GET getLogs
 	url(r'^getLogs$', user_views.getLogs, name='getLogs'),
+	# GET md5?name=[ ]
+	url(r'^md5$', user_views.testMD5, name='md5'),
+
 	
 	# POST user/register
 	# name pw pwConfirm email
