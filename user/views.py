@@ -12,7 +12,7 @@ from .forms import *
 from .utils.SendEmail import sendActivateCode
 from .utils.JsonEncoder import jsonBack, getJson
 from .utils.OperationLogs import saveLogs
-from .utils.Arrange import arrangeEvent
+from .utils.Arrange import arrangeEvent, setEventFinish
 from .utils.GenerateCode import getCode, GenerateDynamicCode
 
 import random
@@ -308,6 +308,7 @@ def getUserEventByUserName(request):
 
 	if UserDefault.objects.filter(name=name).exists():
 		userDefault = UserDefault.objects.get(name=name)
+		setEventFinish(userDefault)
 		if 0<=state<=3:
 			if reverse=='true':
 				events = userDefault.event_set.filter(state=state).filter(isDeleted=False).order_by(order).reverse()
