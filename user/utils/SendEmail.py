@@ -13,7 +13,8 @@ def sendActivateCode(name, email, aCode):
 	subject = u'[网站信息]激活码'
 	# net ip here
 
-	hrefSrt = 'http://127.0.0.1:8000/activate?name=' + name + '&code=' + aCode
+	# hrefSrt = 'http://127.0.0.1:8000/activate?name=' + name + '&code=' + aCode
+	hrefSrt = 'http://yuki.pandaomeng.com/user/activate?name=' + name + '&code=' + aCode
 	href = '<a href="' + hrefSrt + '">' + aCode + '</a>'
 	content = u'这是你的激活码: ' + href + '<br>' + hrefSrt
 	to_addr = email

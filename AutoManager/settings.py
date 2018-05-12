@@ -156,5 +156,5 @@ EMAIL_HOST = 'smtp.qq.com'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = '2261774643@qq.com' # 帐号
 EMAIL_HOST_PASSWORD = 'ifhvfvazcecvecdi'  # 授权码
-DEFAULT_FROM_EMAIL = 'sawatariyuki <2261774643@qq.com>'
+DEFAULT_FROM_EMAIL = 'sawatariyuki <NT-Studio>'
 # END Email Settings
