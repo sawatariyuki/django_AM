@@ -154,7 +154,7 @@ STATIC_URL = '/static/'
 EMAIL_USE_SSL = True
 EMAIL_HOST = 'smtp.qq.com'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = '2261774643@qq.com' # 帐号
-EMAIL_HOST_PASSWORD = 'ifhvfvazcecvecdi'  # 授权码
-DEFAULT_FROM_EMAIL = 'sawatariyuki <NT-Studio>'
+EMAIL_HOST_USER = '2261774643@qq.com'                   # 帐号
+EMAIL_HOST_PASSWORD = 'ifhvfvazcecvecdi'                # 授权码
+DEFAULT_FROM_EMAIL = 'NT-スタジオ <2261774643@qq.com>'  # <>内的必须与 EMAIL_HOST_USER 相同
 # END Email Settings

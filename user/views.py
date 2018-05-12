@@ -50,7 +50,7 @@ def register(request):
 			userDefault.save()
 			saveLogs(userDefault=userDefault, content='用户注册', request=request)	# 日志记录
 
-			# sendActivateCode(name, email, aCode)
+			sendActivateCode(name, email, aCode)
 			userDefault.pw = ""
 			return HttpResponse( getJson(code=0, msg=u'用户:' + name + u' 注册成功，激活码已发送到注册邮箱', data=userDefault) )
 
@@ -69,7 +69,9 @@ def activate(request):
 				return HttpResponse( getJson(code=1, msg=u'用户已激活', data=[]) )
 			else:
 				if u.activateCode == aCode:
-					UserDefault.objects.filter(name=name).update(isActivated=True)
+					# UserDefault.objects.filter(name=name).update(isActivated=True)
+					u.isActivated = True
+					u.save()
 					saveLogs(userDefault=u, content='用户激活', request=request)	# 日志记录
 					return HttpResponse( getJson(code=1, msg=u'用户已激活', data=[]) )
 				else:
@@ -96,7 +98,9 @@ def activatePage(request):
 						return HttpResponse( getJson(code=1, msg=u'用户已激活', data=[]) )
 					else:
 						if u.activateCode == aCode:
-							UserDefault.objects.filter(name=name).update(isActivated=True)
+							# UserDefault.objects.filter(name=name).update(isActivated=True)
+							u.isActivated = True
+							u.save()
 							saveLogs(userDefault=u, content='用户激活', request=request)	# 日志记录
 							return HttpResponse( getJson(code=1, msg=u'用户已激活', data=[]) )
 						else:
