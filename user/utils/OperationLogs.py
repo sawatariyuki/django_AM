@@ -18,7 +18,7 @@ def saveLogs(userDefault, content, request):
 		try:
 			ret = getlocationByIp(ip)
 			location = json.loads( ret )
-			locStr = location['country']+'-'+location['province']+'-'+location['city']
+			locStr = location['country'] + '-' + location['province'] + '-' + location['city']
 		except:
 			locStr = '未知区域'
 
